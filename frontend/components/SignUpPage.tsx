@@ -14,7 +14,7 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -23,8 +23,33 @@ export default function SignUpPage() {
       return
     }
 
-    // Here you would typically handle the sign-up logic
     console.log('Sign up attempted with:', { username, email, password })
+
+    try {
+      const response = await fetch('http://localhost:8080/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          email: email,
+          password: password
+        }),
+      })
+
+      if (response.ok) {
+        // Sign up successful, redirect to login page
+        window.location.href = '/login'
+      } else {
+        const errorData = await response.json()
+        if (errorData.error) {
+            setError(errorData.error)
+        }
+      }
+    } catch (error) {
+      setError('Error signing up')
+    }
   }
 
   return (

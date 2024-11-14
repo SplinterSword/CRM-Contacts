@@ -11,10 +11,37 @@ export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log('Login attempted with:', { username, password })
-    // Here you would typically handle the login logic
+    
+    try {
+      const response = await fetch(`http://localhost:8080/users?username=${username}&password=${password}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.ok) {
+
+        const data = await response.json()
+
+        if (data.users == null) {
+          throw "Password is incorrect"
+        }
+
+        window.location.href = '/home'
+
+
+      } else {
+        const errorData = await response.json()
+        throw errorData.error
+      }
+
+    } catch (error) {
+      console.error("Error Logging In:", error)
+    }
   }
 
   return (
