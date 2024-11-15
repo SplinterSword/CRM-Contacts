@@ -16,6 +16,7 @@ export default function LoginPage() {
     const storedUsername = localStorage.getItem('username')
     if (storedUsername) {
       setUsername(storedUsername)
+      localStorage.removeItem('username')
     }
   }, [])
 
