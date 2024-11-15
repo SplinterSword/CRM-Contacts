@@ -31,7 +31,7 @@ export default function LoginPage() {
           throw "Password is incorrect"
         }
 
-        window.location.href = '/home'
+        window.location.href = '/home?username=' + username
 
 
       } else {

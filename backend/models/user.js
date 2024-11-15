@@ -5,7 +5,11 @@ const bcrypt = require('bcrypt');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      User.hasMany(models.Contact, { foreignKey: 'UserId', as: 'contacts' });
+      User.hasMany(models.Contact, {
+        foreignKey: 'Username',
+        sourceKey: 'Username',
+        as: 'contacts',
+      });
     }
   }
 
@@ -14,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       Username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       Email: {
         type: DataTypes.STRING,
@@ -32,7 +37,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'User',
-      tableName: 'Users',
     }
   );
 

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { Sequelize } = require('sequelize');
 const { createUser, getUser } = require('./queries/sql_users.js');
+const { createContactForUser } = require('./queries/sql_contacts.js');
 
 const app = express()
 const port = 8080
@@ -43,6 +44,16 @@ app.get('/users', async(req, res) => {
         res.status(200).json({ message: 'Users retrieved successfully', users: users });
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving users', error: error.message });
+    }
+})
+
+app.post('/contacts', async(req, res) => {
+    try {
+        const { username, contactData } = req.body;
+        const newContact = await createContactForUser(username, contactData);
+        res.status(201).json({ message: 'Contact created successfully', contact: newContact });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating contact', error: error.message });
     }
 })
 

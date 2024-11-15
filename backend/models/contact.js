@@ -4,8 +4,11 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Contact extends Model {
     static associate(models) {
-      // Define the association with User
-      Contact.belongsTo(models.User, { foreignKey: 'UserId', as: 'user' });
+      Contact.belongsTo(models.User, {
+        foreignKey: 'Username',
+        targetKey: 'Username',
+        as: 'user',
+      });
     }
   }
 
@@ -37,15 +40,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      UserId: {
-        type: DataTypes.INTEGER,
+      Username: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
     },
     {
       sequelize,
       modelName: 'Contact',
-      tableName: 'Contacts',
     }
   );
 

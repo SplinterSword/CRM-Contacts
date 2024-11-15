@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Pencil, Trash2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation';
 
 interface Contact {
   id: number
@@ -30,6 +31,9 @@ export default function HomePage() {
   const [editingContact, setEditingContact] = useState<Contact | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  const [searchParams] = useSearchParams();
+  const username = searchParams[1];
+
   const handleEdit = (contact: Contact) => {
     setEditingContact(contact)
     setIsDialogOpen(true)
@@ -49,7 +53,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar username={username}/>
 
       <div className="container mx-auto mt-8">
         <h1 className="text-2xl font-bold mb-4">Contacts</h1>

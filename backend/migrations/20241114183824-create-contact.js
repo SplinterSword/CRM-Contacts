@@ -6,55 +6,55 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       FirstName: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       LastName: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       Email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
       Phone_Number: {
         type: Sequelize.STRING,
         allowNull: true,
-        unique: true
+        unique: true,
       },
       Company: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       Job_Title: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
-      UserId: {
-        type: Sequelize.INTEGER,
+      Username: {
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
-          model: 'Users', // refers to the Users table
-          key: 'id'
+          model: 'Users',
+          key: 'Username',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onDelete: 'SET NULL',
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Contacts');
-  }
+  },
 };

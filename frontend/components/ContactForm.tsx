@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Grid, Paper } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Navbar from './Navbar';
+import { useSearchParams } from 'next/navigation';
 
 const theme = createTheme({
   palette: {
@@ -28,13 +30,61 @@ const ContactForm = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const [searchParams] = useSearchParams();
+  const username = searchParams[1];
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add form submission logic here (e.g., API call)
-    console.log('Form Data:', formData);
+    
+    const contactData = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      company: formData.company,
+      jobTitle: formData.jobTitle,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/contacts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            contactData: contactData
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          alert(data.message)
+
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNumber: '',
+            company: '',
+            jobTitle: '',
+          })
+
+        } else {
+          const errorData = await response.json()
+          throw errorData.error
+        }
+
+    } catch (error) {
+      console.error('Error submitting contact:', error);
+    }
+    
   };
 
   return (
+    <div>
+    <Navbar username={username}/>
     <ThemeProvider theme={theme}>
       <Box
         sx={{
@@ -133,6 +183,7 @@ const ContactForm = () => {
         </Paper>
       </Box>
     </ThemeProvider>
+    </div>
   );
 };
 
