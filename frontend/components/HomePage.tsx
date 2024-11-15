@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from "./Navbar"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -20,11 +20,7 @@ interface Contact {
   jobTitle: string
 }
 
-// Mock data for contacts
-const initialContacts: Contact[] = [
-  { id: 1, firstName: 'John', lastName: 'Doe', email: 'john@example.com', phoneNumber: '123-456-7890', company: 'Acme Inc.', jobTitle: 'Developer' },
-  { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', phoneNumber: '098-765-4321', company: 'Tech Co.', jobTitle: 'Designer' },
-]
+const initialContacts: Contact[] = []
 
 export default function HomePage() {
   const [contacts, setContacts] = useState(initialContacts)
@@ -34,13 +30,46 @@ export default function HomePage() {
   const [searchParams] = useSearchParams();
   const username = searchParams[1];
 
+  const fetchContacts = async () => {
+    const response = await fetch(`http://localhost:8080/contacts?username=${username}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    const data = await response.json()
+    const initialContacts: Contact[] = []
+
+
+    for (const current of data.contacts) {
+      let contact : Contact= {
+        id: current.id,
+        firstName: current.FirstName,
+        lastName: current.LastName,
+        email: current.Email,
+        phoneNumber: current.Phone_Number,
+        company: current.Company,
+        jobTitle: current.Job_Title
+      }
+      
+      initialContacts.push(contact)
+    }
+    setContacts(initialContacts)
+  }
+
+  useEffect(() => {
+    fetchContacts()
+  }, [])
+
+
   const handleEdit = (contact: Contact) => {
     setEditingContact(contact)
     setIsDialogOpen(true)
   }
 
   const handleDelete = (id: number) => {
-    setContacts(contacts.filter(contact => contact.id !== id))
+    setContacts(contacts.filter(contact => contact?.id !== id))
   }
 
   const handleSave = (updatedContact: Contact) => {
@@ -54,10 +83,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar username={username}/>
-
       <div className="container mx-auto mt-8">
         <h1 className="text-2xl font-bold mb-4">Contacts</h1>
-        <Table>
+        {contacts && contacts.length === 0 && <p>No contacts found</p>}
+        {contacts && contacts.length > 0 && 
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>First Name</TableHead>
@@ -90,6 +120,7 @@ export default function HomePage() {
             ))}
           </TableBody>
         </Table>
+        }
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

@@ -26,6 +26,25 @@ async function createContactForUser(username, contactData) {
   }
 }
 
+async function getContactsForUser(username) {
+  try {
+    const user = await User.findOne({ where: { Username: username } });
+
+    if (!user) {
+      throw new Error(`User with username "${username}" not found.`);
+    }
+
+    const contacts = await Contact.findAll({ where: { Username: username } });
+
+    console.log('Contacts retrieved successfully:', contacts.map(contact => contact.toJSON()));
+    return contacts;
+  } catch (error) {
+    console.error('Error retrieving contacts:', error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   createContactForUser,
+  getContactsForUser
 };
