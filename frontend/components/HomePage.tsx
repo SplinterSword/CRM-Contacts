@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, ChevronUp, ChevronDown} from 'lucide-react'
 import { useSearchParams } from 'next/navigation';
 
 interface Contact {
@@ -22,11 +22,16 @@ interface Contact {
 
 const initialContacts: Contact[] = []
 
+type SortKey = keyof Contact
+type SortOrder = 'asc' | 'desc'
+
 export default function HomePage() {
   const [contacts, setContacts] = useState(initialContacts)
   const [editingContact, setEditingContact] = useState<Contact | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [error, setError] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('id')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
 
   const [searchParams] = useSearchParams();
   const username = searchParams[1];
@@ -118,6 +123,24 @@ export default function HomePage() {
     }
   }
 
+  const handleSort = (key: SortKey) => {
+    setSortOrder(currentOrder => 
+      sortKey === key && currentOrder === 'asc' ? 'desc' : 'asc'
+    )
+    setSortKey(key)
+  }
+
+  const sortedContacts = [...contacts].sort((a, b) => {
+    if (a[sortKey] < b[sortKey]) return sortOrder === 'asc' ? -1 : 1
+    if (a[sortKey] > b[sortKey]) return sortOrder === 'asc' ? 1 : -1
+    return 0
+  })
+
+  const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
+    if (sortKey !== columnKey) return null
+    return sortOrder === 'asc' ? <ChevronUp className="h-4 w-4 inline" /> : <ChevronDown className="h-4 w-4 inline" />
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar username={username}/>
@@ -128,36 +151,35 @@ export default function HomePage() {
         {contacts && contacts.length > 0 && 
           <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>First Name</TableHead>
-              <TableHead>Last Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone Number</TableHead>
-              <TableHead>Company</TableHead>
-              <TableHead>Job Title</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {contacts.map((contact) => (
-              <TableRow key={contact.id}>
-                <TableCell>{contact.firstName}</TableCell>
-                <TableCell>{contact.lastName}</TableCell>
-                <TableCell>{contact.email}</TableCell>
-                <TableCell>{contact.phoneNumber}</TableCell>
-                <TableCell>{contact.company}</TableCell>
-                <TableCell>{contact.jobTitle}</TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="icon" onClick={() => handleEdit(contact)}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => handleDelete(contact.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+              <TableRow>
+                {['firstName', 'lastName', 'email', 'phoneNumber', 'company', 'jobTitle'].map((key) => (
+                  <TableHead key={key} onClick={() => handleSort(key as SortKey)} className="cursor-pointer">
+                    {key.charAt(0).toUpperCase() + key.slice(1)} <SortIcon columnKey={key as SortKey} />
+                  </TableHead>
+                ))}
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
+            </TableHeader>
+            <TableBody>
+              {sortedContacts.map((contact) => (
+                <TableRow key={contact.id}>
+                  <TableCell>{contact.firstName}</TableCell>
+                  <TableCell>{contact.lastName}</TableCell>
+                  <TableCell>{contact.email}</TableCell>
+                  <TableCell>{contact.phoneNumber}</TableCell>
+                  <TableCell>{contact.company}</TableCell>
+                  <TableCell>{contact.jobTitle}</TableCell>
+                  <TableCell>
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(contact)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(contact.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
         </Table>
         }
       </div>

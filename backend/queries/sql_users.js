@@ -23,7 +23,7 @@ async function getUser(username, password) {
 
     if (!user) {
       console.log('User not found');
-      return null;
+      return 'User not found';
     }
 
     const passwordMatch = await bcrypt.compare(password, user.Password);
@@ -33,7 +33,7 @@ async function getUser(username, password) {
       return user; 
     } else {
       console.log('Incorrect password');
-      return null;
+      return 'Incorrect password';
     }
   } catch (error) {
     console.error('Error retrieving user:', error.message);
