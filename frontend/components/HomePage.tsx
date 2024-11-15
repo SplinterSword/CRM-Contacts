@@ -26,6 +26,7 @@ export default function HomePage() {
   const [contacts, setContacts] = useState(initialContacts)
   const [editingContact, setEditingContact] = useState<Contact | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [error, setError] = useState('');
 
   const [searchParams] = useSearchParams();
   const username = searchParams[1];
@@ -78,7 +79,7 @@ export default function HomePage() {
       })
       setContacts(contacts.filter(contact => contact?.id !== id))
     } catch (error) {
-      console.error(error)
+      setError("" + error)
     }
   }
 
@@ -92,18 +93,28 @@ export default function HomePage() {
         body: JSON.stringify(updatedContact),
       })
 
-      const data = await response.json()
-      console.log(data)
-
-      setContacts(contacts.map(contact => 
-        contact.id === updatedContact.id ? updatedContact : contact
-      ))
-
       setEditingContact(null)
       setIsDialogOpen(false)
 
+      if (response.ok) {
+
+        const data = await response.json()
+
+        if (data.contact == "Validation error") {
+          throw data.users
+        }
+
+        setContacts(contacts.map(contact => 
+          contact.id === updatedContact.id ? updatedContact : contact
+        ))
+        setError('')
+      } else {
+        const errorData = await response.json()
+        throw errorData.error
+      }
+
     } catch (error) {
-      console.error(error)
+      setError("there is a contact that exist with the same email or phone number")
     }
   }
 
@@ -113,6 +124,7 @@ export default function HomePage() {
       <div className="container mx-auto mt-8">
         <h1 className="text-2xl font-bold mb-4">Contacts</h1>
         {contacts && contacts.length === 0 && <p>No contacts found</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
         {contacts && contacts.length > 0 && 
           <Table>
           <TableHeader>

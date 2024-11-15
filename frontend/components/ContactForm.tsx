@@ -14,6 +14,8 @@ const theme = createTheme({
 });
 
 const ContactForm = () => {
+  const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -77,7 +79,11 @@ const ContactForm = () => {
         }
 
     } catch (error) {
-      console.error('Error submitting contact:', error);
+      if (error == "Validation error") {
+        setError("Contact already exists")
+        return
+      }
+      setError('' + error);
     }
     
   };
@@ -168,6 +174,7 @@ const ContactForm = () => {
                 />
               </Grid>
             </Grid>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
             <Box mt={3}>
               <Button
                 type="submit"

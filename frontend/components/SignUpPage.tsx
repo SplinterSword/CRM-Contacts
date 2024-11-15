@@ -44,11 +44,15 @@ export default function SignUpPage() {
       } else {
         const errorData = await response.json()
         if (errorData.error) {
-            setError(errorData.error)
+          throw errorData.error
         }
       }
     } catch (error) {
-      setError('Error signing up')
+      if (error == "Validation error") {
+        setError("Username/Email already exists")
+        return
+      }
+      setError("" + error)
     }
   }
 
