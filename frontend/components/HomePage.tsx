@@ -8,17 +8,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Pencil, Trash2, ChevronUp, ChevronDown} from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-
 
 interface Contact {
   id: number
@@ -45,9 +42,8 @@ export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(5)
 
-  const [searchParams] = useSearchParams();
-  const username = searchParams[1];
-
+  let username:string = localStorage.getItem('username') || '';
+  
   const fetchContacts = async () => {
     const response = await fetch(`http://localhost:8080/contacts?username=${username}`, {
       method: 'GET',

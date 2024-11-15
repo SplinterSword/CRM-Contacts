@@ -13,11 +13,14 @@ const Navbar = ({ username }: NavbarProps) => {
         <div className="container mx-auto flex justify-between items-center">
           <span>Welcome, {username}</span>
           <div className='flex gap-10'>
-            <Link href={`/home?username=${username}`}  className="hover:underline">
+            <Link href={`/home`}  className="hover:underline">
               DashBoard
             </Link>
-            <Link href={`/contact-form?username=${username}`} className="hover:underline">
+            <Link href={`/contact-form`} className="hover:underline">
               Contact Form
+            </Link>
+            <Link href={`/login`} className="hover:underline">
+              Logout
             </Link>
           </div>
         </div>

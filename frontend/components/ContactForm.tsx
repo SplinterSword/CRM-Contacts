@@ -33,8 +33,7 @@ const ContactForm = () => {
   };
 
 
-  const [searchParams] = useSearchParams();
-  const username = searchParams[1];
+  let username:string = localStorage.getItem('username') || '';
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
