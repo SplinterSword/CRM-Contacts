@@ -19,12 +19,10 @@ module.exports = {
       Email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
       },
       Phone_Number: {
         type: Sequelize.STRING,
         allowNull: true,
-        unique: true,
       },
       Company: {
         type: Sequelize.STRING,
@@ -53,8 +51,18 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+
+    // Add a composite unique constraint
+    await queryInterface.addConstraint('Contacts', {
+      fields: ['Username', 'Email', 'Phone_Number'],
+      type: 'unique',
+      name: 'unique_user_email_phone_constraint',
+    });
   },
+
   async down(queryInterface, Sequelize) {
+    // Remove the unique constraint first
+    await queryInterface.removeConstraint('Contacts', 'unique_user_email_phone_constraint');
     await queryInterface.dropTable('Contacts');
   },
 };

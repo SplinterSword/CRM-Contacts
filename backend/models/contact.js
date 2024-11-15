@@ -25,12 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       Email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
       },
       Phone_Number: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
       },
       Company: {
         type: DataTypes.STRING,
@@ -48,6 +46,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'Contact',
+      indexes: [
+        {
+          unique: true,
+          fields: ['Username', 'Email', 'Phone_Number'], // Composite unique constraint
+        },
+      ],
     }
   );
 
