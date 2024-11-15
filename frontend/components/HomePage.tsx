@@ -8,7 +8,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Pencil, Trash2, ChevronUp, ChevronDown} from 'lucide-react'
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+
 
 interface Contact {
   id: number
@@ -32,6 +42,8 @@ export default function HomePage() {
   const [error, setError] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('id')
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(5)
 
   const [searchParams] = useSearchParams();
   const username = searchParams[1];
@@ -136,6 +148,13 @@ export default function HomePage() {
     return 0
   })
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentContacts = sortedContacts.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+
   const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
     if (sortKey !== columnKey) return null
     return sortOrder === 'asc' ? <ChevronUp className="h-4 w-4 inline" /> : <ChevronDown className="h-4 w-4 inline" />
@@ -161,7 +180,7 @@ export default function HomePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedContacts.map((contact) => (
+              {currentContacts.map((contact) => (
                 <TableRow key={contact.id}>
                   <TableCell>{contact.firstName}</TableCell>
                   <TableCell>{contact.lastName}</TableCell>
@@ -182,6 +201,34 @@ export default function HomePage() {
             </TableBody>
         </Table>
         }
+        <div className="mt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => paginate(currentPage > 1 ? currentPage - 1 : 1)}
+                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+              {Array.from({ length: Math.ceil(contacts.length / itemsPerPage) }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink 
+                    onClick={() => paginate(index + 1)}
+                    isActive={currentPage === index + 1}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => paginate(currentPage < Math.ceil(contacts.length / itemsPerPage) ? currentPage + 1 : currentPage)}
+                  className={currentPage === Math.ceil(contacts.length / itemsPerPage) ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen }>
