@@ -11,22 +11,6 @@ app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:3000',
 }));
-  
-
-const sequelize = new Sequelize('postgres://postgres:cC509958@localhost:5432/crm_contact');
-
-async function main() {
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-        sequelize.close()
-        process.exit(0);
-    }
-}
-
-main();
 
 app.post('/users', async(req, res) => {
     try {
