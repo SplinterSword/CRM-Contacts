@@ -68,16 +68,43 @@ export default function HomePage() {
     setIsDialogOpen(true)
   }
 
-  const handleDelete = (id: number) => {
-    setContacts(contacts.filter(contact => contact?.id !== id))
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`http://localhost:8080/contacts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      setContacts(contacts.filter(contact => contact?.id !== id))
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  const handleSave = (updatedContact: Contact) => {
-    setContacts(contacts.map(contact => 
-      contact.id === updatedContact.id ? updatedContact : contact
-    ))
-    setEditingContact(null)
-    setIsDialogOpen(false)
+  const handleSave = async (updatedContact: Contact) => {
+    try {
+      let response = await fetch(`http://localhost:8080/contacts/${updatedContact.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedContact),
+      })
+
+      const data = await response.json()
+      console.log(data)
+
+      setContacts(contacts.map(contact => 
+        contact.id === updatedContact.id ? updatedContact : contact
+      ))
+
+      setEditingContact(null)
+      setIsDialogOpen(false)
+
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -123,8 +150,8 @@ export default function HomePage() {
         }
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen }>
+        <DialogContent aria-label="Contact Form" aria-describedby="contact-form">
           <DialogHeader>
             <DialogTitle>Edit Contact</DialogTitle>
           </DialogHeader>
@@ -156,7 +183,7 @@ function EditForm({ contact, onSave }: EditFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4"  id='contact-form'>
       <div>
         <Label htmlFor="firstName">First Name</Label>
         <Input id="firstName" name="firstName" value={editedContact.firstName} onChange={handleChange} />

@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { Sequelize } = require('sequelize');
 const { createUser, getUser } = require('./queries/sql_users.js');
-const { createContactForUser, getContactsForUser } = require('./queries/sql_contacts.js');
+const { createContactForUser, getContactsForUser, DeleteOneContact, updateContact } = require('./queries/sql_contacts.js');
 
 const app = express()
 const port = 8080
@@ -64,6 +64,27 @@ app.get('/contacts', async(req, res) => {
         res.status(200).json({ message: 'Contact fetched successfully', contacts: contacts });
     } catch (error) {
         res.status(500).json({ message: 'Error fetching contact', error: error.message });
+    }
+})
+
+app.delete('/contacts/:id', async(req, res) => {
+    try {
+        const id = req.params.id;
+        const deletedContact = await DeleteOneContact(id);
+        res.status(200).json({ message: 'Contact deleted successfully', contact: deletedContact });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting contact', error: error.message });
+    }
+})
+
+app.put('/contacts/:id', async(req, res) => {
+    try {
+        const id = req.params.id;
+        const updatedContact = req.body;
+        const updated = await updateContact(id, updatedContact);
+        res.status(200).json({ message: 'Contact updated successfully', contact: updated });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating contact', error: error.message });
     }
 })
 
