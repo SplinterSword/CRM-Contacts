@@ -15,8 +15,8 @@ After you have downloaded the everything you need you need to download from the 
 ### Step 1 
 Clone the repository in your local machine by the navigating to the desired directory and typing the following command in the terminal.
 ```bash
-  git clone https://github.com/SplinterSword/Internship_Assignment.git
-  cd Internship_Assignment
+  git clone https://github.com/SplinterSword/CRM-Contacts.git
+  cd CRM_Contacts
 ```
 
 ### Step 2
